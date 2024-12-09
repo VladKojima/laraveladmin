@@ -1,0 +1,23 @@
+.table {
+    border-spacing: 0;
+}
+
+.td {
+    padding: 8px;
+    border: 2px solid black;
+}
+
+.thead {
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+.tbody {
+    .tr:hover {
+        background-color: gray;
+    }
+
+    .td:hover {
+        background-color: wheat;
+    }
+}
