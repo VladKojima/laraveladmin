@@ -23,7 +23,6 @@ export function ObjectTable({
 
     const [editableObject, setEditableObject] = useState(null);
     const [editableProperty, setEditableProperty] = useState(null);
-    const [editableValue, setEditableValue] = useState(null);
 
     return <div>
         <table className={style.table}>
@@ -42,31 +41,31 @@ export function ObjectTable({
                         .map(([k, v]) => <td
                             key={k}
                             className={style.td}
-                            onClick={() => {
+                            onDoubleClick={() => {
                                 if (k !== 'id' && (editableColumns === true ||
                                     !!editableColumns && editableColumns?.includes(k))) {
                                     setEditableObject(obj.id);
                                     setEditableProperty(k);
-                                    setEditableValue(v);
                                 }
                             }}
-                            contentEditable={editableObject === obj.id &&
-                                editableProperty === k}
-                            onInput={({ target: { value } }) => { setProp(obj, k, value) }}
-                            onBlur={() => {
-                                setEditableObject(null);
-                                setEditableProperty(null);
-                            }}
-                            // suppressContentEditableWarning
-                            dangerouslySetInnerHTML={{ __html: v }}
-                        />)}
+                        >
+                            <input
+                                className={style.field}
+                                onBlur={() => {
+                                    setEditableObject(null);
+                                    setEditableProperty(null);
+                                }}
+                                value={v} onChange={({ target: { value } }) => setProp(obj, k, value)}
+                                readOnly={!(editableObject === obj.id && editableProperty === k)}
+                            />
+                        </td>)}
                 </tr>)}
             </tbody>
         </table>
         {
             editableColumns && <div>
                 <button onClick={reset}>Сбросить</button>
-                <button onClick={() => onSave(objectsState)}>Сохранить</button>
+                <button onClick={() => { onSave(objectsState); }}>Сохранить</button>
             </div>
         }
 
