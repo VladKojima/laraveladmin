@@ -13,11 +13,22 @@
 }
 
 .tbody {
-    .tr:hover {
-        background-color: gray;
-    }
-
     .td:hover {
         background-color: wheat;
     }
+}
+
+div:has(>.table) {
+    display: flex;
+}
+
+.buttons {
+    margin-left: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.editable {
+    background-color: gray;
 }
