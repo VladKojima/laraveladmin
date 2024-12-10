@@ -15,3 +15,12 @@ export class Feedback {
         this.created_at = model.created_at;
     }
 }
+
+export const feedbackSchema = {
+    id: 'number',
+    user_id: 'number',
+    cafe_id: 'number',
+    rating: 'number',
+    comment: 'text',
+    created_at: 'date'
+}

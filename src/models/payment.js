@@ -13,3 +13,9 @@ export class Payment {
         this.payment_date = model.payment_date;
     }
 }
+
+export const paymentSchema = {
+    id: 'number',
+    reservation_id: 'number',
+    amount: 'number',
+}

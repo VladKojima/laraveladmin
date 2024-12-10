@@ -19,3 +19,14 @@ export class Promotion {
         this.is_active = model.is_active;
     }
 }
+
+export const promotionSchema = {
+    id: 'number',
+    name: 'text',
+    description: 'text',
+    discount_percentage: 'number',
+    start_date: 'date',
+    end_date: 'date',
+    hall_id: 'number',
+    is_active: ['true', "false"]
+}

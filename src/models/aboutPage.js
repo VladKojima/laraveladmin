@@ -11,3 +11,10 @@ export class AboutPage {
         this.image_url = model.image_url;
     }
 }
+
+export const aboutPageSchema = {
+    id: 'number',
+    title: 'text',
+    description: 'text',
+    image_urld: 'text',
+}

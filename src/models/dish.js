@@ -25,3 +25,12 @@ export class Dish {
         this.type = model.type;
     }
 }
+
+export const dishSchema = {
+    id: 'number',
+    image: 'text',
+    title: 'text',
+    weight: 'number',
+    cost: 'number',
+    type: ['Snacks, Drinks, Hot, Salads, Desserts']
+}

@@ -17,3 +17,13 @@ export class Table {
         this.y = model.y;
     }
 }
+
+export const tableSchema = {
+    id: 'number',
+    hall_id: 'number',
+    table_number: 'number',
+    capacity: 'number',
+    is_available: ['true', 'false'],
+    x: 'number',
+    y: 'number',
+}

@@ -15,3 +15,12 @@ export class Hall {
         this.schemeImg = model.schemeImg;
     }
 }
+
+export const hallSchema = {
+    id: 'number',
+    name: 'text',
+    capacity: 'number',
+    description: 'text',
+    img: 'text',
+    schemeImg: 'text'
+}

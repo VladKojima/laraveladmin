@@ -11,3 +11,10 @@ export class BonusPoints {
         this.expiration_date = model.expiration_date;
     }
 }
+
+export const bonusPointsSchema = {
+    id: 'number',
+    user_id: 'number',
+    points: 'number',
+    expiration_date: 'date',
+}

@@ -17,3 +17,13 @@ export class Event {
         this.is_public = model.is_public;
     }
 }
+
+export const eventSchema = {
+    id: 'number',
+    hall_id: 'number',
+    name: 'text',
+    description: 'text',
+    start_time: 'time',
+    end_time: 'time',
+    is_public: ['true', 'false']
+}
