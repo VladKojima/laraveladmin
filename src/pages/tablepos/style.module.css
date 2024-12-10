@@ -1,0 +1,25 @@
+.scheme {
+    width: 90%;
+    margin: 0 auto;
+    
+    img {
+        width: 100%;
+        object-fit: contain;
+    }
+}
+
+.opt {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    background: #F5FFFA;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.opt:hover {
+    background: #cd653f;
+}
