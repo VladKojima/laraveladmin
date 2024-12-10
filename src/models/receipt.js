@@ -19,3 +19,12 @@ export class Receipt {
         this.pdf_url = model.pdf_url;
     }
 }
+
+export const receiptSchema = {
+    id: 'number',
+    payment_id: 'number',
+    receipt_number: 'number',
+    amount: 'number',
+    issued_at: 'date',
+    tax_amount: 'number',
+}
