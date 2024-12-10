@@ -15,15 +15,22 @@ export function post(route, obj) {
     return api.post(route, obj);
 }
 
-export const aboutPageRoute = '/about-page';
-export const bonusPointsRoute = '/bonus-points';
-export const dishRoute = '/dishes';
-export const eventRoute = '/events';
-export const feedbackRoute = '/feedbacks';
-export const hallRoute = '/halls';
-export const paymentRoute = '/payments';
-export const promotionRoute = '/promotions';
-export const receiptRoute = '/receipts';
-export const reservationRoute = '/reservations';
-export const table = '/tables';
-export const userRoute = '/users';
+export function put(route, obj) {
+    return api.put(route, obj);
+}
+
+export const routes = {
+    aboutPage: '/about-page',
+    bonusPoints: '/bonus-points',
+    dish: '/dishes',
+    event: '/events',
+    feedback: '/feedbacks',
+    hall: '/halls',
+    payment: '/payments',
+    promotion: '/promotions',
+    receipt: '/receipts',
+    reservation: '/reservations',
+    table: '/tables',
+    user: '/users',
+}
+
