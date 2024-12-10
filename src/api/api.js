@@ -19,6 +19,10 @@ export function put(route, obj) {
     return api.put(route, obj);
 }
 
+export function del(route) {
+    return api.delete(route);
+}
+
 export const routes = {
     aboutPage: '/about-page',
     bonusPoints: '/bonus-points',

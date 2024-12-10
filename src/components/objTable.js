@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import style from './style.module.css';
-import { idSymbol } from '../utils/idSymbol';
+import { idSymbol, changedSymbol, deletedSymbol } from '../utils/symbols';
 
 export function ObjectTable({
     objects,
@@ -11,30 +11,39 @@ export function ObjectTable({
 }) {
     const [objectsState, setObjectsState] = useState(objects);
 
-    const keys = Object.keys(objects[0]);
-
     function reset() {
         setObjectsState(objects);
         setEditableObject(null);
     }
 
     function setProp(object, prop, value) {
-        setObjectsState(objectsState.map(obj => {
-            if (obj !== object) return obj;
+        setObjectsState(prevState => prevState.map(obj => {
+            if ((obj.id ?? obj[idSymbol]) !== (object.id ?? object[idSymbol])) return obj;
 
             return { ...obj, [prop]: value };
         }))
     }
 
     function add() {
+        setEditableObject(null);
+
         setObjectsState([
             ...objectsState,
-            { ...Object.fromEntries(keys.map(k => [k, undefined])), [idSymbol]: crypto.randomUUID() }
+            { ...Object.fromEntries(columns.map(k => [k, undefined])), [idSymbol]: crypto.randomUUID() }
         ])
     }
 
     function remove(object) {
-        setObjectsState(objectsState.filter(obj => obj !== object));
+        setEditableObject(null);
+
+        if (object[idSymbol])
+            setObjectsState(objectsState.filter(obj => obj !== object));
+        else
+            setProp(object, deletedSymbol, true);
+    }
+
+    function recover(object) {
+        setProp(object, deletedSymbol, false);
     }
 
     const [editableObject, setEditableObject] = useState(null);
@@ -42,8 +51,7 @@ export function ObjectTable({
     return <div>
         <table className={style.table}>
             <thead className={style.thead}>
-                <tr>{keys
-                    .filter(k => !columns || columns.includes(k))
+                <tr>{columns
                     .map(
                         k => <td key={k} className={style.td}>{k}</td>
                     )}
@@ -51,9 +59,13 @@ export function ObjectTable({
                 </tr>
             </thead>
             <tbody className={style.tbody}>
-                {objectsState.map(obj => <tr key={obj.id ?? obj[idSymbol]} className={[style.tr, editableObject === (obj.id ?? obj[idSymbol]) && style.editable].join(" ")}>
+                {objectsState.map(obj => <tr key={obj.id ?? obj[idSymbol]} className={[
+                    style.tr,
+                    editableObject === (obj.id ?? obj[idSymbol]) && style.editable,
+                    obj[deletedSymbol] && style.deleted
+                ].join(" ")}>
                     {Object.entries(obj)
-                        .filter(([k, v]) => !columns || columns.includes(k))
+                        .filter(([k, v]) => columns.includes(k))
                         .map(([k, v]) => <td
                             key={k}
                             className={style.td}
@@ -61,14 +73,19 @@ export function ObjectTable({
                             <input
                                 className={style.field}
                                 value={!!v ? v : ""}
-                                onChange={({ target: { value } }) => setProp(obj, k, value)}
+                                onChange={({ target: { value } }) => {
+                                    setProp(obj, k, schema[k] === 'number' ? +value : value);
+                                    if (!(obj[changedSymbol] || obj[idSymbol]))
+                                        setProp(obj, changedSymbol, true);
+                                }}
                                 disabled={k === 'id' || editableObject !== (obj.id ?? obj[idSymbol])}
                                 type={schema?.[k] ?? 'text'}
                             />
                         </td>)}
                     <td className={style.td}>
-                        <button onClick={() => setEditableObject(obj.id ?? obj[idSymbol])}>Редактировать</button>
-                        <button onClick={() => remove(obj)}>Удалить</button>
+                        <button onClick={() => setEditableObject(obj.id ?? obj[idSymbol])} disabled={obj[deletedSymbol]}>Редактировать</button>
+                        <button onClick={() => remove(obj)} hidden={obj[deletedSymbol]}>Удалить</button>
+                        <button onClick={() => recover(obj)} hidden={!obj[deletedSymbol]}>Восстановить</button>
                     </td>
                 </tr>)}
             </tbody>
