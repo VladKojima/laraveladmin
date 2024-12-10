@@ -16,5 +16,5 @@ export const aboutPageSchema = {
     id: 'number',
     title: 'text',
     description: 'text',
-    image_urld: 'text',
+    image_url: 'text',
 }
