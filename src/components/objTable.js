@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import style from './style.module.css';
 import { idSymbol, changedSymbol, deletedSymbol } from '../utils/symbols';
 
@@ -10,6 +10,10 @@ export function ObjectTable({
     onSave,
 }) {
     const [objectsState, setObjectsState] = useState(objects);
+
+    useEffect(() => {
+        reset();
+    }, [objects]);
 
     function reset() {
         setObjectsState(objects);
