@@ -23,7 +23,8 @@ export const tableSchema = {
     hall_id: 'number',
     table_number: 'number',
     capacity: 'number',
-    is_available: ['true', 'false'],
+    is_available: 'checkbox',
     x: 'number',
     y: 'number',
+    base_price: 'number'
 }

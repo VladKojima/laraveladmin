@@ -22,5 +22,6 @@ export const hallSchema = {
     capacity: 'number',
     description: 'text',
     img: 'text',
-    schemeImg: 'text'
+    schemeImg: 'text',
+    base_price: 'number',
 }
