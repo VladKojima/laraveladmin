@@ -1,27 +1,31 @@
 import { useEffect, useState } from 'react';
 import style from './style.module.css';
-import { get, put, routes } from '../../api/api';
+import { get, post, put, routes } from '../../api/api';
+import { usePromise } from '../../utils/usePromise';
+import Loading from '../../components/loading';
 
 export function AboutPage() {
+
+    const [load, loadingStatus, data] = usePromise(() => get(routes.aboutPage));
+    const [save, savingStatus] = usePromise(() => put(`${routes.aboutPage}`, infoState));
 
     const [info, setInfo] = useState();
     const [infoState, setInfoState] = useState();
 
     useEffect(() => {
-        get(routes.aboutPage).then(setInfo);
+        load();
     }, []);
 
-    function reset() {
-        setInfoState(info)
-    }
-
-    function save() {
-        put(`${routes.aboutPage}`, infoState).then(() => setInfo(infoState));
-    }
+    useEffect(() => setInfo(data), [data]);
 
     useEffect(reset, [info]);
 
+    function reset() {
+        setInfoState(info);
+    }
+
     return <div>
+        <Loading status={loadingStatus} onRetry={load} />
         {infoState && <div className={style.info}>
             <input
                 className={style.title}
@@ -44,8 +48,16 @@ export function AboutPage() {
             />
         </div>}
         <div className={style.buttons}>
-            <button onClick={reset}>Сбросить</button>
-            <button onClick={save}>Сохранить</button>
+            <button
+                onClick={reset}
+                disabled={!(loadingStatus === 'fulfilled')}
+            >Сбросить
+            </button>
+            <button
+                onClick={save}
+                disabled={!(loadingStatus === 'fulfilled') || savingStatus === 'pending'}
+            >Сохранить
+            </button>
         </div>
     </div>
 }

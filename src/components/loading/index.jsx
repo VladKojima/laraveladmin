@@ -6,6 +6,6 @@ export default function Loading({ status, loadingMsg, errorMsg, onRetry }) {
 
     return <div className={style.wrapper}>
         <p>{status === 'pending' ? loadingMsg ?? "Загрузка данных..." : errorMsg ?? "Ошибка загрузки"}</p>
-        {status === "rejected" && <button onClick={() => onRetry?.()}>Повторить загрузку</button>}
+        {status === "rejected" && onRetry && <button onClick={() => onRetry()}>Повторить загрузку</button>}
     </div>
 }

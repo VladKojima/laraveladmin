@@ -1,57 +1,72 @@
 import { useEffect, useState } from "react"
-import { ObjectTable } from "../../components/objTable";
-import { del, get, post, put, routes } from '../../api/api'
+import { ObjectTable } from '../../components/objTable';
+import { del, get, listRoutes, post, put, listRoutes as routes } from '../../api/api'
 import { schemas } from "../../models/model";
 import { idSymbol, changedSymbol, deletedSymbol } from "../../utils/symbols";
+import style from './style.module.css';
+import { usePromise } from '../../utils/usePromise';
+import Loading from '../../components/loading';
 
 export function TableViewer() {
 
-    const [tables, setTables] = useState(Object.fromEntries(Object.keys(schemas).map(k => [k, []])));
+    // const [tables, setTables] = useState(Object.fromEntries(Object.keys(schemas).map(k => [k, []])));
 
     const [table, setTable] = useState(null);
 
+    const [load, status, data] = usePromise(fetchData);
+
     function fetchData() {
-        Promise.all(Object.keys(schemas).map(s => get(routes[s])))
-            .then(tbs => setTables(Object
-                .fromEntries(Object.keys(schemas)
-                    .map((k, i) => [k, tbs[i]]))))
-            .catch(error => { console.log(error) });
+        return Promise.all(Object.keys(listRoutes).map(s => get(routes[s])))
+            .then(tbs => Object
+                .fromEntries(Object.keys(listRoutes)
+                    .map((k, i) => [k, tbs[i]])));
     }
 
     useEffect(() => {
-        fetchData();
+        load();
     }, []);
 
     function handleSave(objects) {
+        const promises = [];
+
         for (const obj of objects) {
             if (obj[deletedSymbol]) {
-                del(`${routes[table]}/${obj.id}`);
+                promises.push(del(`${routes[table]}/${obj.id}`));
                 continue;
             }
             if (obj[idSymbol]) {
-                post(routes[table], obj);
+                promises.push(post(routes[table], obj));
             } else
                 if (obj[changedSymbol]) {
-                    put(`${routes[table]}/${obj.id}`, obj);
+                    promises.push(put(`${routes[table]}/${obj.id}`, obj));
                 }
         }
+
+        Promise.all(promises).then(load());
     }
 
     return <div>
-        <select onChange={({ target: { value } }) => setTable(value)}>
-            {Object.keys(schemas)
-                .map(route => <option key={route} value={route}>{route}</option>)
-            }
-        </select>
-        {
-            table && <ObjectTable
-                editableColumns={true}
-                columns={Object.keys(schemas[table])}
-                schema={schemas[table]}
-                objects={tables[table]}
-                onSave={handleSave}
-            />
-        }
+        <Loading status={status} />
+        {status === 'fulfilled' && <>
+            <span>Таблица: </span>
+            <select onChange={({ target: { value } }) => setTable(value)}>
+                {Object.keys(listRoutes)
+                    .map(route => <option key={route} value={route}>{route}</option>)
+                }
+            </select>
 
+            {
+                table && <div className={style.wrapper}>
+                    <ObjectTable
+                        editableColumns={true}
+                        columns={Object.keys(schemas[table])}
+                        schema={schemas[table]}
+                        objects={data[table]}
+                        onSave={handleSave}
+                    />
+                </div>
+
+            }
+        </>}
     </div>
 }

@@ -1,26 +1,47 @@
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { get, listRoutes, put } from "../../api/api";
 import style from './style.module.css';
 import { changedSymbol } from '../../utils/symbols';
+import Loading from "../../components/loading";
+import { usePromise } from "../../utils/usePromise";
 
 export function TablePosTool() {
-    const [tables, setTables] = useState([]);
-    const [halls, setHalls] = useState([]);
     const [tablesState, setTablesState] = useState([]);
 
     const [selectedHall, setSelectedHall] = useState(null);
 
-    useState(() => {
-        get(listRoutes.table).then(tbs => { setTables(tbs); setTablesState(tbs) });
+    const [load, loadingStatus, data] = usePromise(() => Promise.all([
+        get(listRoutes.table),
         get(listRoutes.hall)
-            .then(hs => { setHalls(hs); setSelectedHall(hs[0]) });
+    ]));
 
-        const handler = () => setRect(imgRef.current?.getBoundingClientRect())
+    const [save, savingStatus] = usePromise(() => Promise.all(tablesState
+        .filter(table => table[changedSymbol])
+        .map(table => put(`${listRoutes.table}/${table.id}`, table))));
+
+    const [tables, halls] = data ?? [[], []];
+
+    useEffect(() => { if (!!tables.length) reset() }, [tables]);
+
+    useEffect(() => {
+        if (!!halls.length)
+            setSelectedHall(halls[0])
+    }, [halls])
+
+    useEffect(() => {
+        load();
+
+        const handler = resetRect;
 
         window.addEventListener('resize', handler);
 
         return () => window.removeEventListener('resize', handler);
     }, []);
+
+    useEffect(() => {
+        if (savingStatus === 'fulfilled')
+            load();
+    }, [savingStatus])
 
     const imgRef = useRef(null);
 
@@ -79,63 +100,64 @@ export function TablePosTool() {
         ) + 'px';
     }
 
-    function save() {
-        for (const table of tablesState) {
-            if (table[changedSymbol])
-                put(`${listRoutes.table}/${table.id}`, table);
-        }
-    }
-
     function reset() {
         setTablesState(tables);
     }
 
+    function resetRect() {
+        setRect(imgRef.current?.getBoundingClientRect());
+    }
+
     return <div>
-        <select
-            onChange={
-                ({ target: { value } }) => {
-                    setSelectedHall(
-                        halls.find(hall => hall.id === +value)
-                    );
-                    setRect(imgRef.current?.getBoundingClientRect());
+        <Loading status={loadingStatus} onRetry={load} />
+        <Loading status={savingStatus} loadingMsg={"Идет сохранение..."} errorMsg={"Не удалось выполнить сохранение. Повторите попытку."}/>
+        {loadingStatus === 'fulfilled' && <>
+            <select
+                onChange={
+                    ({ target: { value } }) => {
+                        setSelectedHall(
+                            halls.find(hall => hall.id === +value)
+                        );
+                        resetRect();
+                    }
                 }
-            }
-        >
-            {halls.map(hall => <option key={hall.id} value={hall.id}>{hall.id}: {hall.name}</option>)}
-        </select>
-        {selectedHall && <div>
-            <p>{selectedHall.name}</p>
-            <button onClick={reset}>Сбросить</button>
-            <button onClick={save}>Сохранить</button>
-            <div
-                className={style.scheme}
-                onDragStart={(e) => { e.preventDefault() }}
             >
-                <img
-                    src={selectedHall.schemeImg}
-                    ref={imgRef}
+                {halls.map(hall => <option key={hall.id} value={hall.id}>{hall.id}: {hall.name}</option>)}
+            </select>
+            {selectedHall && <div>
+                <p>{selectedHall.name}</p>
+                <button onClick={reset} disabled={savingStatus === 'pending'}>Сбросить</button>
+                <button onClick={save} disabled={savingStatus === 'pending'}>Сохранить</button>
+                <div
+                    className={style.scheme}
                     onDragStart={(e) => { e.preventDefault() }}
-                    onLoad={() => setRect(imgRef.current?.getBoundingClientRect())}
-                />
-                {
-                    rect && tablesState
-                        .filter(table => table.hall_id === selectedHall.id)
-                        .map(table => <div
-                            key={table.id}
-                            className={style.opt}
-                            style={{
-                                top: `${(rect?.top ?? 0) + table.y * scale}px`,
-                                left: `${(rect?.left ?? 0) + table.x * scale}px`,
-                            }}
-                            onDragStart={(e) => { e.preventDefault() }}
-                            onMouseDown={e => handleMDown(e, table)}
-                        >
-                            {table.table_number}
-                        </div>)
-                }
-            </div>
-            <div>
-            </div>
-        </div>}
+                >
+                    <img
+                        src={selectedHall.schemeImg}
+                        ref={imgRef}
+                        onDragStart={(e) => { e.preventDefault() }}
+                        onLoad={resetRect}
+                    />
+                    {
+                        rect && tablesState
+                            .filter(table => table.hall_id === selectedHall.id)
+                            .map(table => <div
+                                key={table.id}
+                                className={style.opt}
+                                style={{
+                                    top: `${(rect?.top ?? 0) + table.y * scale}px`,
+                                    left: `${(rect?.left ?? 0) + table.x * scale}px`,
+                                }}
+                                onDragStart={(e) => { e.preventDefault() }}
+                                onMouseDown={e => handleMDown(e, table)}
+                            >
+                                {table.table_number}
+                            </div>)
+                    }
+                </div>
+                <div>
+                </div>
+            </div>}
+        </>}
     </div>
 }
