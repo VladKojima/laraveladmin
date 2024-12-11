@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import style from './style.module.css';
-import { idSymbol, changedSymbol, deletedSymbol } from '../utils/symbols';
+import { idSymbol, changedSymbol, deletedSymbol } from '../../utils/symbols';
 
 export function ObjectTable({
     objects,
