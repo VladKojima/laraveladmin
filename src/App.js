@@ -1,5 +1,5 @@
 import './App.css';
-import { TableViewer } from './pages/tableviewer';
+import { Viewer } from './components/viewer';
 
 function App() {
   return (
@@ -7,7 +7,7 @@ function App() {
       <header>
         <p>Управление контентом</p>
       </header>
-      <TableViewer />
+      <Viewer />
     </div>
   );
 }

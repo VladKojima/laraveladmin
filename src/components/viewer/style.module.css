@@ -1,0 +1,16 @@
+.menu {
+    width: max-content;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    border: 2px solid black;
+    background-color: gray;
+    padding: 8px;
+    margin: 20px auto;
+}
+
+.window {
+    width: 100%;
+    margin: 0 auto;
+    overflow-x: auto;
+}
