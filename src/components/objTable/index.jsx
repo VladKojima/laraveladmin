@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import style from './style.module.css';
 import { idSymbol, changedSymbol, deletedSymbol } from '../../utils/symbols';
+import { TypedInput } from '../typedInput';
 
 export function ObjectTable({
     objects,
@@ -29,11 +30,14 @@ export function ObjectTable({
     }
 
     function add() {
-        setEditableObject(null);
+
+        const uuid = crypto.randomUUID();
+
+        setEditableObject(uuid);
 
         setObjectsState([
             ...objectsState,
-            { ...Object.fromEntries(columns.map(k => [k, undefined])), [idSymbol]: crypto.randomUUID() }
+            { ...Object.fromEntries(columns.map(k => [k, undefined])), [idSymbol]: uuid }
         ])
     }
 
@@ -68,24 +72,30 @@ export function ObjectTable({
                     editableObject === (obj.id ?? obj[idSymbol]) && style.editable,
                     obj[deletedSymbol] && style.deleted
                 ].join(" ")}>
-                    {Object.entries(obj)
-                        .filter(([k, v]) => columns.includes(k))
-                        .map(([k, v]) => <td
-                            key={k}
-                            className={style.td}
-                        >
-                            <input
-                                className={style.field}
-                                value={!!v ? v : ""}
-                                onChange={({ target: { value } }) => {
-                                    setProp(obj, k, schema[k] === 'number' ? +value : value);
-                                    if (!(obj[changedSymbol] || obj[idSymbol]))
-                                        setProp(obj, changedSymbol, true);
-                                }}
-                                disabled={k === 'id' || editableObject !== (obj.id ?? obj[idSymbol])}
-                                type={schema?.[k] ?? 'text'}
-                            />
-                        </td>)}
+                    {columns.map(column => <td
+                        key={column}
+                        className={style.td}
+                    >
+                        <TypedInput
+                            className={style.field}
+                            value={obj[column] ?? ""}
+                            checked={obj[column] ?? false}
+                            onChange={({ target: { value, checked } }) => {
+                                let v = value;
+
+                                if (schema[column] === 'number')
+                                    v = +value;
+                                if (schema[column] === 'checkbox')
+                                    v = checked;
+
+                                setProp(obj, column, v);
+                                if (!(obj[changedSymbol] || obj[idSymbol]))
+                                    setProp(obj, changedSymbol, true);
+                            }}
+                            disabled={column === 'id' || editableObject !== (obj.id ?? obj[idSymbol])}
+                            type={schema?.[column] ?? 'text'}
+                        />
+                    </td>)}
                     <td className={style.td}>
                         <button onClick={() => setEditableObject(obj.id ?? obj[idSymbol])} disabled={obj[deletedSymbol]}>Редактировать</button>
                         <button onClick={() => remove(obj)} hidden={obj[deletedSymbol]}>Удалить</button>
