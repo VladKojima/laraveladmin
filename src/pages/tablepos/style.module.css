@@ -1,6 +1,7 @@
 .scheme {
     width: 90%;
     margin: 0 auto;
+    position: relative;
     
     img {
         width: 100%;
@@ -22,4 +23,8 @@
 
 .opt:hover {
     background: #cd653f;
+}
+
+.editor button {
+    margin-bottom: 20px;
 }

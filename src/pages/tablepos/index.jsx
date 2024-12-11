@@ -24,7 +24,7 @@ export function TablePosTool() {
     useEffect(() => { if (!!tables.length) reset() }, [tables]);
 
     useEffect(() => {
-        if (!!halls.length)
+        if (!!halls.length && !selectedHall)
             setSelectedHall(halls[0])
     }, [halls])
 
@@ -74,13 +74,15 @@ export function TablePosTool() {
         document.removeEventListener('mousemove', handleMMove);
         document.removeEventListener('mouseup', handler);
 
+        console.log(rect.top);
+
         setTablesState(tablesState.map(t => {
             if (t.id !== table.id) return t;
 
             return {
                 ...t,
-                x: Math.round((draggable.current.getBoundingClientRect().left - rect.left) / scale),
-                y: Math.round((draggable.current.getBoundingClientRect().top - rect.top) / scale),
+                x: Math.round(parseInt(draggable.current.style.left) / scale),
+                y: Math.round(parseInt(draggable.current.style.top) / scale),
                 [changedSymbol]: true
             };
         }))
@@ -88,15 +90,15 @@ export function TablePosTool() {
 
     function handleMMove({ pageY, pageX }) {
         draggable.current.style.left = clamp(
-            pageX - draggable.current.offsetWidth / 2,
-            rect.left,
-            rect.right - draggable.current.getBoundingClientRect().width
+            pageX - rect.left - draggable.current.offsetWidth / 2,
+            0,
+            rect.width - draggable.current.getBoundingClientRect().width
         ) + 'px';
 
         draggable.current.style.top = clamp(
-            pageY - draggable.current.offsetHeight / 2,
-            rect.top,
-            rect.bottom - draggable.current.getBoundingClientRect().height
+            pageY - rect.top - draggable.current.offsetHeight / 2,
+            0,
+            rect.height - draggable.current.getBoundingClientRect().height
         ) + 'px';
     }
 
@@ -110,7 +112,7 @@ export function TablePosTool() {
 
     return <div>
         <Loading status={loadingStatus} onRetry={load} />
-        <Loading status={savingStatus} loadingMsg={"Идет сохранение..."} errorMsg={"Не удалось выполнить сохранение. Повторите попытку."}/>
+        <Loading status={savingStatus} loadingMsg={"Идет сохранение..."} errorMsg={"Не удалось выполнить сохранение. Повторите попытку."} />
         {loadingStatus === 'fulfilled' && <>
             <select
                 onChange={
@@ -124,7 +126,7 @@ export function TablePosTool() {
             >
                 {halls.map(hall => <option key={hall.id} value={hall.id}>{hall.id}: {hall.name}</option>)}
             </select>
-            {selectedHall && <div>
+            {selectedHall && <div className={style.editor}>
                 <p>{selectedHall.name}</p>
                 <button onClick={reset} disabled={savingStatus === 'pending'}>Сбросить</button>
                 <button onClick={save} disabled={savingStatus === 'pending'}>Сохранить</button>
@@ -145,8 +147,8 @@ export function TablePosTool() {
                                 key={table.id}
                                 className={style.opt}
                                 style={{
-                                    top: `${(rect?.top ?? 0) + table.y * scale}px`,
-                                    left: `${(rect?.left ?? 0) + table.x * scale}px`,
+                                    top: `${table.y * scale}px`,
+                                    left: `${table.x * scale}px`,
                                 }}
                                 onDragStart={(e) => { e.preventDefault() }}
                                 onMouseDown={e => handleMDown(e, table)}
