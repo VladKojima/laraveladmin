@@ -23,8 +23,7 @@ export function del(route) {
     return api.delete(route);
 }
 
-export const routes = {
-    aboutPage: '/about-page',
+export const listRoutes = {
     bonusPoints: '/bonus-points',
     dish: '/dishes',
     event: '/events',
@@ -35,6 +34,8 @@ export const routes = {
     receipt: '/receipts',
     reservation: '/reservations',
     table: '/tables',
-    user: '/users',
 }
 
+export const routes = {
+    aboutPage: '/about-page',
+}
