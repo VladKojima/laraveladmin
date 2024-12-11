@@ -32,5 +32,5 @@ export const dishSchema = {
     title: 'text',
     weight: 'number',
     cost: 'number',
-    type: ['Snacks', 'Drinks', 'Hot', 'Salads', 'Desserts']
+    type: DishTypes
 }

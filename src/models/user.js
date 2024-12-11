@@ -19,3 +19,13 @@ export class User {
         this.date_joined = model.date_joined;
     }
 }
+
+export const userSchema = {
+    id: 'number',
+    username: 'text',
+    email: 'text',
+    password: 'text',
+    role: Roles,
+    phone_number: 'text',
+    date_joined: 'date'
+}

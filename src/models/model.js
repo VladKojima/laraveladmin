@@ -9,17 +9,18 @@ import { promotionSchema } from './promotion';
 import { receiptSchema } from './receipt';
 // import { aboutPageSchema } from './reservation';
 import { tableSchema } from './table';
+import { userSchema } from './user';
 // import { aboutPageSchema } from './user';
 
 export const schemas = {
-    aboutPage: aboutPageSchema,
-    bonusPoints: bonusPointsSchema,
-    dish: dishSchema,
-    event: eventSchema,
-    feedback: feedbackSchema,
-    hall: hallSchema,
-    payment: paymentSchema,
-    promotion: promotionSchema,
-    receipt: receiptSchema,
-    table: tableSchema
+    BonusPoints: bonusPointsSchema,
+    Dish: dishSchema,
+    Event: eventSchema,
+    Feedback: feedbackSchema,
+    Hall: hallSchema,
+    Payment: paymentSchema,
+    Promotion: promotionSchema,
+    Receipt: receiptSchema,
+    Table: tableSchema,
+    User: userSchema,
 };

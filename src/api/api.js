@@ -24,16 +24,17 @@ export function del(route) {
 }
 
 export const listRoutes = {
-    bonusPoints: '/bonus-points',
-    dish: '/dishes',
-    event: '/events',
-    feedback: '/feedbacks',
-    hall: '/halls',
-    payment: '/payments',
-    promotion: '/promotions',
-    receipt: '/receipts',
-    reservation: '/reservations',
-    table: '/tables',
+    BonusPoints: '/bonus-points',
+    Dish: '/dishes',
+    // Event: '/events',
+    // Feedback: '/feedbacks',
+    Hall: '/halls',
+    // Payment: '/payments',
+    // Promotion: '/promotions',
+    // Receipt: '/receipts',
+    // Reservation: '/reservations',
+    Table: '/tables',
+    User: '/users',
 }
 
 export const routes = {

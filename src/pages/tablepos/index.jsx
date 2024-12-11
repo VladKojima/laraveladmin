@@ -11,13 +11,13 @@ export function TablePosTool() {
     const [selectedHall, setSelectedHall] = useState(null);
 
     const [load, loadingStatus, data] = usePromise(() => Promise.all([
-        get(listRoutes.table),
-        get(listRoutes.hall)
+        get(listRoutes.Table),
+        get(listRoutes.Hall)
     ]));
 
     const [save, savingStatus] = usePromise(() => Promise.all(tablesState
         .filter(table => table[changedSymbol])
-        .map(table => put(`${listRoutes.table}/${table.id}`, table))));
+        .map(table => put(`${listRoutes.Table}/${table.id}`, table))));
 
     const [tables, halls] = data ?? [[], []];
 
@@ -73,8 +73,6 @@ export function TablePosTool() {
     function handleMUp(table, handler) {
         document.removeEventListener('mousemove', handleMMove);
         document.removeEventListener('mouseup', handler);
-
-        console.log(rect.top);
 
         setTablesState(tablesState.map(t => {
             if (t.id !== table.id) return t;

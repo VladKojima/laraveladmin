@@ -9,19 +9,10 @@ import Loading from '../../components/loading';
 
 export function TableViewer() {
 
-    // const [tables, setTables] = useState(Object.fromEntries(Object.keys(schemas).map(k => [k, []])));
-
     const [table, setTable] = useState(null);
 
-    const [load, status, data] = usePromise(fetchData);
+    const [load, status, data] = usePromise(() => get('/admin/data'));
     const [save, savingStatus, , savingError] = usePromise(handleSave);
-
-    function fetchData() {
-        return Promise.all(Object.keys(routes).map(s => get(routes[s])))
-            .then(tbs => Object
-                .fromEntries(Object.keys(routes)
-                    .map((k, i) => [k, tbs[i]])));
-    }
 
     useEffect(() => {
         load();
@@ -29,7 +20,7 @@ export function TableViewer() {
 
     useEffect(() => {
         if (!table && !!data)
-            setTable('bonusPoints')
+            setTable('BonusPoints')
     }, [data]);
 
     useEffect(() => {
@@ -38,34 +29,46 @@ export function TableViewer() {
     }, [savingStatus])
 
     function handleSave(objects) {
-        const promises = [];
+        const deleted = [];
+        const stored = []
+        const updated = [];
 
         for (const obj of objects) {
             if (obj[deletedSymbol]) {
-                promises.push(del(`${routes[table]}/${obj.id}`));
+                deleted.push(obj);
                 continue;
             }
             if (obj[idSymbol]) {
-                promises.push(post(routes[table], obj));
+                stored.push(obj);
             } else
                 if (obj[changedSymbol]) {
-                    promises.push(put(`${routes[table]}/${obj.id}`, obj));
+                    updated.push(obj);
                 }
         }
 
-        return Promise.all(promises);
+        return Promise.all(
+            [
+                ...deleted
+                    .map(obj => del(`${routes[table]}/${obj.id}`)),
+                !!stored.length && post(routes[table], stored),
+                !!updated.length && put(routes[table], updated),
+            ]);
     }
 
     return <div className={style.page}>
         <Loading status={status} onRetry={load} />
-        <Loading
-            status={savingStatus}
-            loadingMsg={"Идет сохранение..."}
-            errorMsg={"Ошибка сохранения: " + (savingError ? Object.values(savingError.response.data.errors).join(' ') : '')}
-        />
+        <div
+            className={style.savingInfo}
+        >
+            <Loading
+                status={savingStatus}
+                loadingMsg={"Идет сохранение..."}
+                errorMsg={"Ошибка сохранения: " + (savingError != null ? Object.values(savingError.response.data.errors).join(' ') : '')}
+            />
+        </div>
         {status === 'fulfilled' && <>
             <span>Таблица: </span>
-            <select onChange={({ target: { value } }) => setTable(value)} value={table}>
+            <select onChange={({ target: { value } }) => setTable(value)} value={table ?? ''}>
                 {Object.keys(routes)
                     .map(route => <option key={route} value={route}>{route}</option>)
                 }
