@@ -19,8 +19,8 @@ export function put(route, obj) {
     return api.put(route, obj);
 }
 
-export function del(route) {
-    return api.delete(route);
+export function del(route, obj) {
+    return api.delete(route, { data: obj });
 }
 
 export const listRoutes = {

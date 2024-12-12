@@ -48,8 +48,7 @@ export function TableViewer() {
 
         return Promise.all(
             [
-                ...deleted
-                    .map(obj => del(`${routes[table]}/${obj.id}`)),
+                !!deleted.length && del(routes[table], deleted.map(obj => obj.id)),
                 !!stored.length && post(routes[table], stored),
                 !!updated.length && put(routes[table], updated),
             ]);
@@ -63,7 +62,11 @@ export function TableViewer() {
             <Loading
                 status={savingStatus}
                 loadingMsg={"Идет сохранение..."}
-                errorMsg={"Ошибка сохранения: " + (savingError != null ? Object.values(savingError.response.data.errors).join(' ') : '')}
+                errorMsg={"Ошибка сохранения: " + (
+                    savingError?.response?.data?.errors != null
+                        ? Object.values(savingError.response.data.errors).join(' ')
+                        : savingError?.message ?? ''
+                )}
             />
         </div>
         {status === 'fulfilled' && <>
