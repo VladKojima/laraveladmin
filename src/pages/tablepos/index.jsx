@@ -40,6 +40,7 @@ export function TablePosTool() {
     useEffect(() => {
         if (savingStatus === 'fulfilled')
             load();
+        resetRect();
     }, [savingStatus])
 
     const imgRef = useRef(null);
@@ -112,6 +113,7 @@ export function TablePosTool() {
         <Loading status={savingStatus} loadingMsg={"Идет сохранение..."} errorMsg={"Не удалось выполнить сохранение. Повторите попытку."} />
         {loadingStatus === 'fulfilled' && <>
             <select
+                value={selectedHall?.id}
                 onChange={
                     ({ target: { value } }) => {
                         setSelectedHall(
