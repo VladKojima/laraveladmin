@@ -23,11 +23,6 @@ export function TableViewer() {
             setTable('BonusPoints')
     }, [data]);
 
-    useEffect(() => {
-        if (savingStatus === 'fulfilled')
-            load();
-    }, [savingStatus])
-
     function handleSave(objects) {
         const deleted = [];
         const stored = []
@@ -48,9 +43,10 @@ export function TableViewer() {
 
         return Promise.all(
             [
-                !!deleted.length && del(routes[table], deleted.map(obj => obj.id)),
-                !!stored.length && post(routes[table], stored),
-                !!updated.length && put(routes[table], updated),
+                !!deleted.length && del(routes[table], deleted.map(obj => obj.id)).then(load),
+                !!stored.length && post(routes[table], stored).then(load),
+                !!updated.length && put(routes[table], updated).then(load),
+                post("/admin/clear-cache")
             ]);
     }
 
