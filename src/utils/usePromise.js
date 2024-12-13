@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 
-const statuses = ["inited", "pending", "fulfilled", "rejected"];
+// const statuses = ["inited", "pending", "fulfilled", "rejected"];
 
 export function usePromise(promise) {
     const [status, setStatus] = useState("inited");
@@ -9,6 +9,7 @@ export function usePromise(promise) {
     const [error, setError] = useState();
 
     const start = useCallback((...props) => {
+        if (status === 'pending') return;
         setStatus('pending');
         setValue(undefined);
         setError(undefined);
