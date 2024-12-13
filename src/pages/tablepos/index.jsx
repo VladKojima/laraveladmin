@@ -15,9 +15,8 @@ export function TablePosTool() {
         get(listRoutes.Hall)
     ]));
 
-    const [save, savingStatus] = usePromise(() => Promise.all(tablesState
-        .filter(table => table[changedSymbol])
-        .map(table => put(`${listRoutes.Table}/${table.id}`, table))));
+    const [save, savingStatus] = usePromise(() => put(listRoutes.Table, tablesState
+        .filter(table => table[changedSymbol])));
 
     const [tables, halls] = data ?? [[], []];
 

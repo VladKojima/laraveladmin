@@ -1,4 +1,4 @@
-export const Roles = ["ADMIN", "EMPLOYEE", "CLIENT"];
+export const Roles = ["admin", "user"];
 
 export class User {
     id;
@@ -24,7 +24,6 @@ export const userSchema = {
     id: 'number',
     username: 'text',
     email: 'text',
-    password: 'text',
     role: Roles,
     phone_number: 'text',
     date_joined: 'date'
